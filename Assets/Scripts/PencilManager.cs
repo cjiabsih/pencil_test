@@ -37,13 +37,22 @@ public class PencilManager : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             _prevDrawPosition = new IntVector2((int) Input.mousePosition.x, (int) Input.mousePosition.y);
-            DrawDot(_prevDrawPosition);
         }
 
         if (Input.GetMouseButton(0))
         {
-            _prevDrawPosition = new IntVector2((int) Input.mousePosition.x, (int) Input.mousePosition.y);
-            DrawDot(_prevDrawPosition);
+            IntVector2 currentDrawPosition =
+                new IntVector2((int) Input.mousePosition.x, (int) Input.mousePosition.y);
+
+            if (currentDrawPosition == _prevDrawPosition)
+            {
+                DrawDot(_prevDrawPosition);
+            }
+            else
+            {
+                DrawLine(_prevDrawPosition, currentDrawPosition);
+                _prevDrawPosition = currentDrawPosition;
+            }
         }
     }
 
@@ -82,6 +91,14 @@ public class PencilManager : MonoBehaviour
     {
         RectInt rect = PencilUtils.CalculateFillRect(position, _textureSize, brushSize);
         bool[] mask = PencilUtils.CreateDotMask(rect);
+        ModifyTexture(mask, rect);
+    }
+
+    private void DrawLine(IntVector2 p1, IntVector2 p2)
+    {
+        RectInt rect = PencilUtils.CalculateFillRect(p1, p2, _textureSize, brushSize);
+        bool[] mask = PencilUtils.CreateLineMask(p1, p2, rect, _textureSize, brushSize);
+
         ModifyTexture(mask, rect);
     }
 
