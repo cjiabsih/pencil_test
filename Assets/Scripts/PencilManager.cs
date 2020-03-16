@@ -1,5 +1,7 @@
 ﻿using DefaultNamespace;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(MeshRenderer))]
 public class PencilManager : MonoBehaviour
@@ -14,6 +16,7 @@ public class PencilManager : MonoBehaviour
     [SerializeField] Color brushColor = Color.black;
 
     private IntVector2 _prevDrawPosition;
+    private bool _isDrawing;
 
     private void Awake()
     {
@@ -33,13 +36,16 @@ public class PencilManager : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
+            if(ToolsUtils.CheckIsOverGui()) return;
             _prevDrawPosition = new IntVector2((int) Input.mousePosition.x, (int) Input.mousePosition.y);
+            _isDrawing = true;
         }
 
-        if (Input.GetMouseButton(0))
+        if (Input.GetMouseButton(0) && _isDrawing)
         {
             IntVector2 currentDrawPosition =
                 new IntVector2((int) Input.mousePosition.x, (int) Input.mousePosition.y);
+            currentDrawPosition.FixMousePositionForEditor(_textureSize);
 
             if (currentDrawPosition == _prevDrawPosition)
             {
@@ -50,6 +56,11 @@ public class PencilManager : MonoBehaviour
                 DrawLine(_prevDrawPosition, currentDrawPosition);
                 _prevDrawPosition = currentDrawPosition;
             }
+        }
+
+        if (Input.GetMouseButtonUp(0) && _isDrawing)
+        {
+            _isDrawing = false;
         }
     }
 
@@ -119,6 +130,11 @@ public class PencilManager : MonoBehaviour
     public void OnColorChange(Color color)
     {
         brushColor = color;
+    }
+
+    public void OnRestartButtonClick()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     #endregion
