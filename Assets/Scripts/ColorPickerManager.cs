@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using DefaultNamespace;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
@@ -15,6 +16,8 @@ public class ColorPickerManager : MonoBehaviour, IPointerDownHandler, IPointerUp
 
     private Vector2 _rectScreenCoords;
     private bool _isPickingCircle;
+    private Vector2 _startButtonPosition;
+    private Vector2 _finishButtonPosition;
 
     private Color32 _ringColor;
 
@@ -100,7 +103,22 @@ public class ColorPickerManager : MonoBehaviour, IPointerDownHandler, IPointerUp
             onColorChanged?.Invoke(RingColor);
         }
 
-        SetColorRingState(!gameObject.activeSelf);
+        MoveButton(!gameObject.activeSelf);
+    }
+
+    //TODO: Refactor, remove magic numbers
+    private void MoveButton(bool circleIsActive)
+    {
+        if (circleIsActive)
+        {
+            buttonImage.GetComponent<RectTransform>().DOAnchorPos(new Vector2(-90f, 90f), 0.25f)
+                .OnComplete(() => { SetColorRingState(true); });
+        }
+        else
+        {
+            SetColorRingState(false);
+            buttonImage.GetComponent<RectTransform>().DOAnchorPos(new Vector2(-20f, 20f), 0.25f);
+        }
     }
 
     private void SetColorRingState(bool state)

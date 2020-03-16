@@ -7,7 +7,6 @@ public class IntVector2 : IComparable
     public int x;
     public int y;
 
-
     public static IntVector2 operator +(IntVector2 v1, IntVector2 v2)
     {
         return new IntVector2(v1.x + v2.x, v1.y + v2.y);
