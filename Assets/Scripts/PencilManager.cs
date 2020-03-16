@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using DefaultNamespace;
+﻿using DefaultNamespace;
 using UnityEngine;
 
 [RequireComponent(typeof(MeshRenderer))]
@@ -66,6 +63,10 @@ public class PencilManager : MonoBehaviour
         _material.mainTexture = _texture;
     }
 
+    private void SetUpTools()
+    {
+    }
+
     private void CreateClearTexture(IntVector2 size)
     {
         _texture = new Texture2D(size.x, size.y, TextureFormat.RGB24, false) {filterMode = FilterMode.Point};
@@ -89,15 +90,15 @@ public class PencilManager : MonoBehaviour
 
     private void DrawDot(IntVector2 position)
     {
-        RectInt rect = PencilUtils.CalculateFillRect(position, _textureSize, brushSize);
-        bool[] mask = PencilUtils.CreateDotMask(rect);
+        RectInt rect = DrawingUtils.CalculateFillRect(position, _textureSize, brushSize);
+        bool[] mask = DrawingUtils.CreateDotMask(rect);
         ModifyTexture(mask, rect);
     }
 
     private void DrawLine(IntVector2 p1, IntVector2 p2)
     {
-        RectInt rect = PencilUtils.CalculateFillRect(p1, p2, _textureSize, brushSize);
-        bool[] mask = PencilUtils.CreateLineMask(p1, p2, rect, _textureSize, brushSize);
+        RectInt rect = DrawingUtils.CalculateFillRect(p1, p2, _textureSize, brushSize);
+        bool[] mask = DrawingUtils.CreateLineMask(p1, p2, rect, _textureSize, brushSize);
 
         ModifyTexture(mask, rect);
     }
@@ -105,10 +106,19 @@ public class PencilManager : MonoBehaviour
     private void ModifyTexture(bool[] mask, RectInt rect)
     {
         Color[] colorsToModify = _texture.GetPixels(rect.x, rect.y, rect.width, rect.height);
-        PencilUtils.ModifyColors(ref colorsToModify, mask, rect, brushColor);
+        DrawingUtils.ModifyColors(ref colorsToModify, mask, rect, brushColor);
 
         _texture.SetPixels(rect.x, rect.y, rect.width, rect.height, colorsToModify);
         _texture.Apply();
+    }
+
+    #endregion
+
+    #region Tools
+
+    public void OnColorChange(Color color)
+    {
+        brushColor = color;
     }
 
     #endregion

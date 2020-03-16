@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace DefaultNamespace
 {
-    public static class PencilUtils
+    public static class DrawingUtils
     {
         public static bool[] CreateDotMask(RectInt rect)
         {
